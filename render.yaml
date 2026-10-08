@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: balvibe-studio
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: BALVIBE_DATA_DIR
+        value: /tmp/balvibe
+      - key: BALVIBE_DEMO_MODE
+        value: "false"
+      - key: AZURE_SPEECH_REGION
+        value: centralindia
+      - key: GROQ_MODEL
+        value: qwen/qwen3.8-27b
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: BHASHINI_USER_ID
+        sync: false
+      - key: BHASHINI_API_KEY
+        sync: false
+      - key: BHASHINI_PIPELINE_ID
+        value: 64392f96daac500b55c543cd
+      - key: BHASHINI_ULCA_CONFIG_ENDPOINT
+        value: https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline
+      - key: BHASHINI_INFERENCE_URL
+        value: https://dhruva-api.bhashini.gov.in/services/inference/pipeline
+      - key: AZURE_SPEECH_KEY
+        sync: false

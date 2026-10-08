@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BalVibe Studio</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+    <main>
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">CS202 · GROUP 23</span>
+          <h1>BalVibe Studio</h1>
+        </div>
+        <div class="topbar-actions">
+          <span id="run-label" class="run-chip" style="display: none;">No active run</span>
+          <button id="new-run" class="ghost">New experiment</button>
+        </div>
+      </header>
+
+      <!-- Pipeline progress stepper -->
+      <nav class="pipeline-stepper">
+        <div class="pipe current" data-step="setup"><span>1</span><strong>Setup</strong></div>
+        <div class="pipe" data-step="storyline"><span>2</span><strong>Storyline Flow</strong></div>
+        <div class="pipe" data-step="script"><span>3</span><strong>Script & Dialogues</strong></div>
+        <div class="pipe" data-step="translate"><span>4</span><strong>Translation</strong></div>
+        <div class="pipe" data-step="voice"><span>5</span><strong>Voiceover</strong></div>
+        <div class="pipe" data-step="dataset"><span>6</span><strong>Dataset</strong></div>
+      </nav>
+
+      <!-- Setup panel -->
+      <section class="panel setup-panel" id="setup-panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">STEP 1</span>
+            <h3>Experiment Instructions</h3>
+          </div>
+          <span class="badge" id="mode-badge">LIVE MODE</span>
+        </div>
+        <div class="grid3" style="margin-bottom: 20px;">
+          <label class="field">
+            <span>Target age band</span>
+            <select id="age">
+              <option>4-5</option>
+              <option selected>6-8</option>
+              <option>9-11</option>
+              <option>9-12</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Duration</span>
+            <select id="duration">
+              <option value="30">30s</option>
+              <option value="60">60s</option>
+              <option value="90">90s</option>
+              <option value="120" selected>120s</option>
+            </select>
+          </label>
+        </div>
+        <div class="story-direction-box">
+          <div class="story-direction-head">
+            <strong>Optional story direction</strong>
+            <span class="subtle">Leave any field blank for the AI to invent.</span>
+          </div>
+          <div class="grid3 story-direction-grid">
+            <label class="field">
+              <span>Lead character</span>
+              <input type="text" id="custom-character" placeholder="e.g. Mira the moon rabbit" />
+            </label>
+            <label class="field">
+              <span>Where it happens</span>
+              <input type="text" id="custom-setting" placeholder="e.g. lantern lit forest" />
+            </label>
+            <label class="field">
+              <span>Story idea</span>
+              <input type="text" id="custom-story-idea" placeholder="e.g. help find the missing flowers" />
+            </label>
+          </div>
+        </div>
+
+        <label class="field full">
+          <span>Experiment protocol & stimuli rules</span>
+          <textarea id="instruction" rows="5" placeholder="Type your experiment instructions over here..."></textarea>
+        </label>
+        <div class="action-row">
+          <button id="load-sample" class="ghost">Load sample</button>
+          <button id="generate-flow" class="primary">Generate storyline flow</button>
+        </div>
+      </section>
+
+      <!-- Stage 1: Storyline Flow Panel (NEW) -->
+      <section class="panel hidden" id="storyline-panel">
+        <div class="panel-head sticky-head">
+          <div>
+            <span class="eyebrow">STAGE 1 · GAMIFIED STORYLINE FLOW</span>
+            <h3>Review & Approve Storyline Flow</h3>
+            <p class="subtle" style="margin: 4px 0 0;">Grok gamifies the experiment for the target age & duration. You can choose or edit the storyline, setting, and companion character before approving. The same setting and experiment task continue through every scene; only character actions and trial stimuli change.</p>
+          </div>
+          <div class="head-actions">
+            <button id="unlock-storyline" class="ghost hidden">Unlock storyline</button>
+            <button id="save-storyline" class="ghost">Save edits</button>
+            <button id="approve-storyline" class="primary">Approve & lock storyline</button>
+          </div>
+        </div>
+
+        <div id="storyline-summary-row" class="summary-row"></div>
+
+        <!-- Gamification Overview -->
+        <div class="gamification-overview">
+          <div class="overview-card full-card">
+            <div class="card-head">
+              <span class="eyebrow">NARRATIVE PREMISE & ADVENTURE THEME</span>
+              <span class="badge" id="flow-age-badge">AGE 6-8</span>
+            </div>
+            <div class="grid2">
+              <label class="field">
+                <span>Catchy Video Adventure Title</span>
+                <input type="text" id="flow-title-input" />
+              </label>
+              <label class="field">
+                <span>Where it happens (Setting)</span>
+                <input type="text" id="flow-setting-input" placeholder="e.g. lantern lit forest" />
+              </label>
+            </div>
+            <label class="field">
+              <span>Overarching Gamified Storyline Premise</span>
+              <textarea id="flow-premise-input" rows="3"></textarea>
+            </label>
+          </div>
+
+          <div class="grid2" style="margin-top: 15px;">
+            <div class="overview-card" id="flow-char-card">
+              <span class="eyebrow">LEAD COMPANION CHARACTER</span>
+              <div class="char-edit-fields" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <label class="field">
+                  <span>Character Name</span>
+                  <input type="text" id="flow-char-name-input" />
+                </label>
+                <div class="grid2">
+                  <label class="field">
+                    <span>Character Type</span>
+                    <select id="flow-char-type-input">
+                      <option value="animal">Animal</option>
+                      <option value="robot">Robot</option>
+                      <option value="creature">Creature</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Role</span>
+                    <input type="text" id="flow-char-role-input" />
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="overview-card" id="flow-game-card">
+              <span class="eyebrow">GAMIFICATION MECHANICS</span>
+              <div id="mechanics-details" style="margin-top: 10px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step by Step Flow -->
+        <div style="margin-top: 25px;">
+          <div class="section-title-row">
+            <h4>Step-by-Step Video Progression & Timings</h4>
+            <span class="subtle">Flow steps sum to the planned video duration</span>
+          </div>
+          <div id="flow-steps-container" class="flow-steps-container"></div>
+        </div>
+
+        <div class="action-row gate-row">
+          <div id="storyline-gate-hint" class="hint">Storyline flow must be approved before script & dialogues can be generated.</div>
+          <button id="generate-script-from-flow" class="primary" disabled>Generate Script & Dialogues from Storyline</button>
+        </div>
+      </section>
+
+      <!-- Stage 2: Script & Dialogues Review Panel -->
+      <section class="panel hidden" id="review">
+        <div class="panel-head sticky-head">
+          <div>
+            <span class="eyebrow">STAGE 2 · SCRIPT & DIALOGUES</span>
+            <h3>Review & Edit Scene Dialogues</h3>
+            <p class="subtle" style="margin: 4px 0 0;">Narration and character dialogues generated strictly from the approved storyline flow.</p>
+          </div>
+          <div class="head-actions">
+            <button id="unlock" class="ghost hidden">Unlock & edit</button>
+            <button id="save-script" class="ghost">Save edits</button>
+            <button id="approve" class="primary">Approve & lock script</button>
+          </div>
+        </div>
+        <div id="story-summary" class="summary-row"></div>
+        <div class="review-layout">
+          <div class="scene-list" id="scene-list"></div>
+          <div class="editor" id="scene-editor"><div class="empty">Select a scene.</div></div>
+        </div>
+      </section>
+
+      <!-- Stage 3: Translation Panel -->
+      <section class="panel hidden" id="translation-panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">STAGE 3 · TRANSLATION</span>
+            <h3>Translation</h3>
+          </div>
+          <span class="badge success">SCRIPT APPROVED</span>
+        </div>
+        <div class="grid3" style="margin-bottom: 20px;">
+          <label class="field">
+            <span>Output language</span>
+            <select id="language"></select>
+          </label>
+        </div>
+        <p class="subtle">Choose the translation engine for the approved narration.</p>
+        <div class="provider-grid translation-provider-grid">
+          <button class="provider-card translation-provider-card selected" data-translation-provider="sarvam">
+            <span class="provider-logo sarvam">S</span>
+            <div>
+              <strong>Sarvam Translate</strong>
+              <small>Indic-focused translation API</small>
+            </div>
+            <span class="radio"></span>
+          </button>
+          <button class="provider-card translation-provider-card" data-translation-provider="bhashini">
+            <span class="provider-logo bhashini">B</span>
+            <div>
+              <strong>BHASHINI / ULCA</strong>
+              <small>Government of India language technology pipeline</small>
+            </div>
+            <span class="radio"></span>
+          </button>
+        </div>
+        <div class="action-row">
+          <div id="translate-state" class="hint">Waiting for script approval.</div>
+          <button id="translate" class="primary" disabled>Translate approved script</button>
+        </div>
+        <div id="translation-preview" class="translation-preview hidden"></div>
+      </section>
+
+      <!-- Stage 4: Voiceover Synthesis Panel -->
+      <section class="panel hidden" id="voiceover">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">STAGE 4 · VOICEOVER</span>
+            <h3>Choose synthesis provider</h3>
+          </div>
+          <span class="badge">IDENTICAL OUTPUT CONTRACT</span>
+        </div>
+        <div class="provider-grid">
+          <button class="provider-card tts-provider-card selected" data-provider="azure">
+            <span class="provider-logo azure">A</span>
+            <div>
+              <strong>Microsoft Azure Speech</strong>
+              <small>Neural Indian voices · SSML pauses</small>
+            </div>
+            <span class="radio"></span>
+          </button>
+          <button class="provider-card tts-provider-card" data-provider="sarvam">
+            <span class="provider-logo sarvam">S</span>
+            <div>
+              <strong>Sarvam Bulbul v3</strong>
+              <small>Indic-first voices · native WAV output</small>
+            </div>
+            <span class="radio"></span>
+          </button>
+        </div>
+        <div class="grid3 voice-controls">
+          <label class="field">
+            <span>Voice</span>
+            <select id="voice"></select>
+          </label>
+          <label class="field">
+            <span>Frame rate</span>
+            <select id="fps">
+              <option>24</option>
+              <option>25</option>
+              <option selected>30</option>
+              <option>50</option>
+              <option>60</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Output contract</span>
+            <input value="WAV + JSON timeline" disabled />
+          </label>
+        </div>
+        <div class="action-row">
+          <div id="voice-state" class="hint">Translate the script first.</div>
+          <button id="make-voice" class="primary" disabled>Generate voiceover</button>
+        </div>
+      </section>
+
+      <!-- Stage 5: Dataset & Combined Audio Panel -->
+      <section class="panel hidden" id="dataset">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">STAGE 5 · VOICEOVER DATASET</span>
+            <h3>Timing-ready output</h3>
+          </div>
+          <div class="head-actions">
+            <a id="download-json" class="ghost link-btn" href="#">Download JSON</a>
+          </div>
+        </div>
+        <div class="result-hero">
+          <div>
+            <span class="eyebrow">COMBINED AUDIO</span>
+            <h4 id="result-title">Voiceover complete</h4>
+            <p id="result-copy"></p>
+          </div>
+          <audio id="combined-audio" controls></audio>
+        </div>
+        <div id="dataset-stats" class="stats"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Scene</th>
+                <th>Asset</th>
+                <th>Provider</th>
+                <th>Audio</th>
+                <th>Timeline</th>
+                <th>Frames</th>
+              </tr>
+            </thead>
+            <tbody id="dataset-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div id="toast" class="toast hidden"></div>
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <strong id="loading-title">Working...</strong>
+        <span id="loading-copy">Please wait</span>
+      </div>
+
+    </main>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
